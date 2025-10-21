@@ -41,11 +41,20 @@ app.get('/health', (req, res) => {
 });
 
 app.listen(PORT, () => {
+  const debugMsg = `[DEBUG] {"timestamp":"${new Date().toISOString()}","message":"LOG_FILE resolved to: ${LOG_FILE}"}`;
+  try {
+    fs.writeFileSync(LOG_FILE, debugMsg + '\n', { flag: 'a' });
+  } catch (err) {
+    console.error('Failed to write debug log entry:', err);
+  }
+  console.log(debugMsg);
+  console.log(`[DEBUG] process.cwd() at startup: ${process.cwd()}`);
+  console.log(`[DEBUG] __dirname at startup: ${__dirname}`);
   const startMsg = `[SERVER_START] {"timestamp":"${new Date().toISOString()}","message":"Log Entry Server started on port ${PORT}"}`;
-  fs.appendFile(LOG_FILE, startMsg + '\n', err => {
-    if (err) {
-      console.error('Failed to write server start log entry:', err);
-    }
-  });
+  try {
+    fs.writeFileSync(LOG_FILE, startMsg + '\n', { flag: 'a' });
+  } catch (err) {
+    console.error('Failed to write server start log entry:', err);
+  }
   console.log(`Log Entry Server listening on port ${PORT}`);
 });

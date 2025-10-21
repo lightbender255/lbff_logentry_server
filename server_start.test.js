@@ -11,15 +11,15 @@ describe('Server Start Log Entry', () => {
     if (fs.existsSync(LOG_FILE)) fs.unlinkSync(LOG_FILE);
     serverProcess = spawn(process.execPath, [SERVER_PATH], {
       env: { ...process.env, PORT: '3998', LOG_FILE: LOG_FILE },
-      stdio: 'ignore'
+      stdio: 'inherit'
     });
     // Wait for the server to start
     await new Promise((resolve) => setTimeout(resolve, 800));
   }, 10000);
 
   afterAll(() => {
-    if (serverProcess) serverProcess.kill();
-    if (fs.existsSync(LOG_FILE)) fs.unlinkSync(LOG_FILE);
+  if (serverProcess) serverProcess.kill();
+  // if (fs.existsSync(LOG_FILE)) fs.unlinkSync(LOG_FILE); // Commented out for debug
   });
 
   it('should write a server start entry to the log file', async () => {
