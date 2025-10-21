@@ -4,7 +4,7 @@ const path = require('path');
 const express = require('express');
 
 // Import the server logic
-const LOG_FILE = path.join(__dirname, 'test_logentries.log');
+const LOG_FILE = path.join(__dirname, 'logs', 'test.log');
 let app;
 
 beforeAll(() => {
@@ -26,6 +26,36 @@ beforeAll(() => {
 
 afterAll(() => {
   if (fs.existsSync(LOG_FILE)) fs.unlinkSync(LOG_FILE);
+});
+
+// --- logger.js tests ---
+describe('Logger Utility', () => {
+  const logger = require('./logger');
+
+  it('stringifyError handles Error objects', () => {
+    const err = new Error('fail');
+    const str = logger.stringifyError(err);
+    expect(str).toContain('Error: fail');
+    expect(str).toContain('at');
+  });
+
+  it('stringifyError handles objects', () => {
+    const obj = { foo: 'bar' };
+    const str = logger.stringifyError(obj);
+    expect(str).toBe(JSON.stringify(obj));
+  });
+
+  it('stringifyError handles primitives', () => {
+    expect(logger.stringifyError(42)).toBe('42');
+    expect(logger.stringifyError('abc')).toBe('abc');
+  });
+});
+
+// --- logger.sample.js tests ---
+describe('Logger Sample Usage', () => {
+  it('should not throw when running logger.sample.js', () => {
+    expect(() => require('./logger.sample')).not.toThrow();
+  });
 });
 
 describe('Log Entry Server', () => {

@@ -1,10 +1,21 @@
+
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const LOG_FILE = process.env.LOG_FILE || path.join(__dirname, 'logentries.log');
+const LOG_DIR = path.join(__dirname, 'logs');
+if (!fs.existsSync(LOG_DIR)) {
+  fs.mkdirSync(LOG_DIR);
+}
+const LOG_FILE = process.env.LOG_FILE || path.join(LOG_DIR, 'bedrock.log');
+
+// Serve dashboard and logs
+app.use('/logs', express.static(LOG_DIR));
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dashboard.html'));
+});
 
 app.use(express.json());
 
@@ -30,5 +41,11 @@ app.get('/health', (req, res) => {
 });
 
 app.listen(PORT, () => {
+  const startMsg = `[SERVER_START] {"timestamp":"${new Date().toISOString()}","message":"Log Entry Server started on port ${PORT}"}`;
+  fs.appendFile(LOG_FILE, startMsg + '\n', err => {
+    if (err) {
+      console.error('Failed to write server start log entry:', err);
+    }
+  });
   console.log(`Log Entry Server listening on port ${PORT}`);
 });

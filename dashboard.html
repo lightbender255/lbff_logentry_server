@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Log Entry Server Dashboard</title>
+  <style>
+    body { font-family: monospace; background: #181818; color: #e0e0e0; margin: 0; }
+    #log { white-space: pre-wrap; background: #222; padding: 1em; height: 90vh; overflow-y: scroll; border: 1px solid #444; }
+    h1 { background: #222; margin: 0; padding: 0.5em 1em; font-size: 1.2em; }
+    .info { color: #8ec07c; }
+    .warn { color: #fabd2f; }
+    .error { color: #fb4934; }
+    .server { color: #83a598; }
+  </style>
+</head>
+<body>
+  <h1>Log Entry Server Dashboard</h1>
+  <div id="log"></div>
+  <script>
+    const logDiv = document.getElementById('log');
+    let lastLength = 0;
+    async function fetchLogs() {
+      try {
+        const res = await fetch('/logs/bedrock.log?_=' + Date.now());
+        if (!res.ok) return;
+        const text = await res.text();
+        if (text.length !== lastLength) {
+          logDiv.textContent = text;
+          logDiv.scrollTop = logDiv.scrollHeight;
+          lastLength = text.length;
+        }
+      } catch {}
+    }
+    setInterval(fetchLogs, 1000);
+    fetchLogs();
+  </script>
+</body>
+</html>

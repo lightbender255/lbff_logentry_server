@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "jest"
+  "test": "jest",
+  "start_server": "powershell -ExecutionPolicy Bypass -File ./start_server.ps1"
   },
   "keywords": [],
   "author": "",
